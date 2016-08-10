@@ -123,7 +123,7 @@ class DBWP_Post_Abstract {
 		
 		if ( $this->get_save_meta() && ! empty( $meta_fields ) ){
 			
-			add_action( 'save_post' , array( $this , 'action_save_post' ), $this->return_priority( 'action_save_post' ) , 3 );
+			add_action( 'save_post_' . $this->get_post_type(), array( $this , 'action_save_post' ), $this->return_priority( 'action_save_post' ) , 3 );
 			
 		} // end if
 		
