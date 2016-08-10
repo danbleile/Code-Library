@@ -29,9 +29,9 @@ class DBWP_Post_Abstract {
 	protected $taxonomies = array();
 	
 	
-	
 	/** Get Methods
 	* ------------------------------------------------------------------------- */
+	
 	
 	public function get_author_id(){ return $this->author_id; }
 	public function get_id() { return $this->id; }
@@ -132,6 +132,7 @@ class DBWP_Post_Abstract {
 	
 	/** Set Methods
 	* ------------------------------------------------------------------------- */
+	
 	
 	// Property Sets
 	
