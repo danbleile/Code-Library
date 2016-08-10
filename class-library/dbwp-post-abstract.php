@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.0.2
+//@verson 0.0.3
 
 class DBWP_Post_Abstract {
 	
@@ -9,6 +9,9 @@ class DBWP_Post_Abstract {
 	protected $labels;
 	protected $meta_data = array();
 	protected $meta_fields = array();
+	protected $nonce_action = 'edit_post';
+	protected $nonce_name = '_post_wp_nonce';
+	protected $post;
 	protected $post_excerpt;
 	protected $post_content;
 	protected $post_date;
@@ -21,6 +24,8 @@ class DBWP_Post_Abstract {
 	protected $post_type_args;
 	protected $priorities = array();
 	protected $save_meta = true;
+	protected $scripts_editor_only = true;
+	protected $scripts_single_only = true;
 	protected $taxonomies = array();
 	
 	
@@ -33,6 +38,9 @@ class DBWP_Post_Abstract {
 	public function get_labels() { return $this->labels; }
 	public function get_meta_data() { return $this->meta_data; }
 	public function get_meta_fields() { return $this->meta_fields; }
+	public function get_nonce_action() { return '_' . $this->get_post_type() . '_' . $this->nonce_action; }
+	public function get_nonce_name() { return $this->nonce_name; }
+	public function get_post() { return $this->post; }
 	public function get_post_excerpt() { return $this->post_excerpt; }
 	public function get_post_content( $filter = false ) { return ( $filter ) ? apply_filters( 'the_content' , $this->post_content ) : $this->post_content; }
 	public function get_post_date() { return $this->post_date; }
@@ -45,6 +53,8 @@ class DBWP_Post_Abstract {
 	public function get_post_type_args() { return $this->post_type_args; }
 	public function get_priorities() { return $this->priorities; }
 	public function get_save_meta() { return $this->save_meta; }
+	public function get_scripts_editor_only() { return $this->scripts_editor_only; }
+	public function get_scripts_single_only() { return $this->scripts_single_only; }
 	public function get_taxonomies() { return $this->taxonomies; }
 	
 	
@@ -73,6 +83,12 @@ class DBWP_Post_Abstract {
 			
 		} // end if
 		
+		if ( method_exists( $this , 'the_public_scripts' ) ){
+			
+			add_action( 'wp_enqueue_scripts', array( $this , 'action_wp_enqueue_scripts' ) , $this->return_priority( 'wp_enqueue_scripts' ) );
+			
+		} // end if
+		
 		if ( is_admin() ){
 
 			$this->init_admin();
@@ -90,11 +106,24 @@ class DBWP_Post_Abstract {
 			
 		} // end if
 		
+		if ( method_exists( $this , 'the_edit_form_after_editor' ) ){
+			
+			add_action( 'edit_form_after_editor' , array( $this , 'action_edit_form_after_editor' ), $this->return_priority( 'edit_form_after_editor' ) );
+			
+		} // end if
+		
+		if ( method_exists( $this , 'the_admin_scripts' ) ){
+			
+
+			add_action( 'admin_enqueue_scripts', array( $this , 'action_admin_enqueue_scripts' ) , $this->return_priority( 'admin enqueue scripts' ) , 1 );
+			
+		} // end if
+		
 		$meta_fields = $this->get_meta_fields();
 		
 		if ( $this->get_save_meta() && ! empty( $meta_fields ) ){
 			
-			add_action( 'save_post_' . $this->get_post_type() , array( $this , 'action_save_post' ), $this->return_priority( 'action_save_post' ) , 3 );
+			add_action( 'save_post' , array( $this , 'action_save_post' ), $this->return_priority( 'action_save_post' ) , 3 );
 			
 		} // end if
 		
@@ -112,6 +141,7 @@ class DBWP_Post_Abstract {
 	public function set_meta_data( $value ) { $this->meta_data = $value; }
 	public function set_meta_data_value( $key , $value ){ $this->meta_data[ $key ] = $value; }
 	public function set_meta_fields( $value ) { $this->meta_fields = $value; }
+	public function set_post( $value ) { $this->post = $value; }
 	public function set_post_excerpt( $value ) { $this->post_excerpt = $value; }
 	public function set_post_content( $value ) { $this->post_content = $value; }
 	public function set_post_date( $value ) { $this->post_date = $value; }
@@ -227,11 +257,41 @@ class DBWP_Post_Abstract {
 	* ------------------------------------------------------------------------- */
 	
 	
+	public function action_admin_enqueue_scripts( $hook ){
+		
+		if ( $this->get_scripts_editor_only() && ( 'post.php' != $hook ) ){
+			
+			return;
+			
+		} // end if
+			
+		$this->the_admin_scripts();
+		
+	} // end if
+	
+	
+	public function action_edit_form_after_editor( $post ){
+		
+		if ( $post->post_type == $this->get_post_type() ){
+			
+			wp_nonce_field( $this->return_nonce_action( $post->ID ) , $this->get_nonce_name() );
+			
+			if ( ! isset( $this->post ) ) $this->set_by_wp_post( $post );
+		
+			$this->the_edit_form_after_editor( $post , $this->get_meta_data() );
+			
+		} // end if
+		
+	} // end action_edit_form_after_editor
+	
+	
 	public function action_edit_form_after_title( $post ){
 		
 		if ( $post->post_type == $this->get_post_type() ){
+			
+			wp_nonce_field( $this->return_nonce_action( $post->ID ) , $this->get_nonce_name() );
 		
-			$this->set_meta_data_values_by_post_id( $post->ID );
+			if ( ! isset( $this->post ) ) $this->set_by_wp_post( $post );
 		
 			$this->the_edit_form_after_title( $post , $this->get_meta_data() );
 		
@@ -253,7 +313,7 @@ class DBWP_Post_Abstract {
 		
 		if ( $this->return_do_save( $post_id , $post, $update ) ){
 			
-			$this->set_meta_data_values_by_form();
+			$this->set_by_wp_post( $post , 'form' );
 			
 			$meta = $this->get_meta_data();
 			
@@ -266,6 +326,19 @@ class DBWP_Post_Abstract {
 		} // end if
 		
 	} // end action_save_post
+	
+	
+	public function action_wp_enqueue_scripts(){
+		
+		if ( $this->get_scripts_single_only() && ! is_singular( $this->get_post_type() ) ){
+			
+			return;
+			
+		} // end if
+			
+		$this->the_public_scripts();
+		
+	} // end if
 	
 	
 	/** Return Methods
@@ -288,7 +361,7 @@ class DBWP_Post_Abstract {
 		} // end if
 		
 		// Verify that the input is coming from the proper form
-		if ( ! wp_verify_nonce( $_POST['meta_data_nonce'], plugin_basename( __FILE__ ) ) ) {
+		if ( ! wp_verify_nonce( $_POST[ $this->get_nonce_name() ] , $this->return_nonce_action( $post_id ) ) ) {
 			
 			return false;
 			
@@ -333,6 +406,13 @@ class DBWP_Post_Abstract {
 		} // end if
 		
 	} // end return_field_value
+	
+	
+	public function return_nonce_action( $post_id ){
+		
+		return $this->get_nonce_action() . '_' . $post->ID;
+		
+	} // end return_nonce_action
 	
 	
 	public function return_post_type_args(){
