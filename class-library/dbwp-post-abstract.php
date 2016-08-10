@@ -1,31 +1,50 @@
 <?php
 
-//@verson 0.0.1
+//@verson 0.0.2
 
 class DBWP_Post_Abstract {
 	
-	
+	protected $author_id;
+	protected $id;
 	protected $labels;
 	protected $meta_data = array();
 	protected $meta_fields = array();
+	protected $post_excerpt;
+	protected $post_content;
+	protected $post_date;
+	protected $post_modified;
+	protected $post_name;
+	protected $post_parent;
+	protected $post_status;
+	protected $post_title;
+	protected $post_type;
 	protected $post_type_args;
 	protected $priorities = array();
 	protected $save_meta = true;
-	protected $slug;
 	protected $taxonomies = array();
+	
 	
 	
 	/** Get Methods
 	* ------------------------------------------------------------------------- */
 	
-	
+	public function get_author_id(){ return $this->author_id; }
+	public function get_id() { return $this->id; }
 	public function get_labels() { return $this->labels; }
 	public function get_meta_data() { return $this->meta_data; }
 	public function get_meta_fields() { return $this->meta_fields; }
+	public function get_post_excerpt() { return $this->post_excerpt; }
+	public function get_post_content( $filter = false ) { return ( $filter ) ? apply_filters( 'the_content' , $this->post_content ) : $this->post_content; }
+	public function get_post_date() { return $this->post_date; }
+	public function get_post_modified() { return $this->post_modified; }
+	public function get_post_name() { return $this->post_name; }
+	public function get_post_parent(){ return $this->post_parent; }
+	public function get_post_status() { return $this->post_status; }
+	public function get_post_title( $filter = false ) { return ( $filter ) ? apply_filters( 'the_title' , $this->post_title ) : $this->post_title; }
+	public function get_post_type() { return $this->post_type; }
 	public function get_post_type_args() { return $this->post_type_args; }
 	public function get_priorities() { return $this->priorities; }
 	public function get_save_meta() { return $this->save_meta; }
-	public function get_slug() { return $this->slug; }
 	public function get_taxonomies() { return $this->taxonomies; }
 	
 	
@@ -38,6 +57,7 @@ class DBWP_Post_Abstract {
 		$this->set_taxonomies( $taxonomies );
 		
 	} // end __construct
+	
 	
 	/** Init Methods
 	* ------------------------------------------------------------------------- */
@@ -74,7 +94,7 @@ class DBWP_Post_Abstract {
 		
 		if ( $this->get_save_meta() && ! empty( $meta_fields ) ){
 			
-			add_action( 'save_post_' . $this->get_slug() , array( $this , 'action_save_post' ), $this->return_priority( 'action_save_post' ) , 3 );
+			add_action( 'save_post_' . $this->get_post_type() , array( $this , 'action_save_post' ), $this->return_priority( 'action_save_post' ) , 3 );
 			
 		} // end if
 		
@@ -84,10 +104,67 @@ class DBWP_Post_Abstract {
 	/** Set Methods
 	* ------------------------------------------------------------------------- */
 	
+	// Property Sets
 	
-	public function set_meta_data( $meta ){ $this->meta_data = $meta; }
+	public function set_author_id( $value ){ $this->author_id = $value; }
+	public function set_id( $value ) { $this->id = $value; }
+	public function set_labels( $value ) { $this->labels = $value; }
+	public function set_meta_data( $value ) { $this->meta_data = $value; }
 	public function set_meta_data_value( $key , $value ){ $this->meta_data[ $key ] = $value; }
-	public function set_taxonomies( $taxes ) { $this->taxonomies = $taxes; }
+	public function set_meta_fields( $value ) { $this->meta_fields = $value; }
+	public function set_post_excerpt( $value ) { $this->post_excerpt = $value; }
+	public function set_post_content( $value ) { $this->post_content = $value; }
+	public function set_post_date( $value ) { $this->post_date = $value; }
+	public function set_post_modified( $value ) { $this->post_modified = $value; }
+	public function set_post_name( $value ) { $this->post_name = $value; }
+	public function set_post_parent( $value ){ $this->post_parent = $value; }
+	public function set_post_status( $value ) { $this->post_status = $value; }
+	public function set_post_title( $value ) { $this->post_title = $value; }
+	public function set_post_type_args( $value ) { $this->post_type_args = $value; }
+	public function set_priorities( $value ) { $this->priorities = $value; }
+	public function set_save_meta( $value ) { $this->save_meta = $value; }
+	public function set_taxonomies( $value ) { $this->taxonomies = $value; }
+	
+	
+	// Object Sets
+	
+	public function set_by_wp_post( $post , $meta_by = 'post_id' ){
+		
+		if ( is_numeric( $post ) ){ // post is id
+			
+			$post = get_post( $post );
+			
+		} // end if
+		
+		$this->set_wp_post_values( $post );
+		
+		switch( $meta_by ){
+			
+			case 'post_id':
+				$this->set_meta_data_values_by_post_id( $post->ID );
+				break;
+			case 'form':
+				$this->set_meta_data_values_by_form();
+				break;
+		} // end switch
+		
+	} // set_by_wp_post
+	
+	
+	public function set_wp_post_values( $wp_post ){
+		
+		$this->set_id( $wp_post->ID );
+		$this->set_author_id( $wp_post->post_author );
+		$this->set_post_name( $wp_post->post_name );
+		$this->set_post_title( $wp_post->post_title );
+		$this->set_post_date( $wp_post->post_date );
+		$this->set_post_content( $wp_post->post_content );
+		$this->set_post_excerpt( $wp_post->post_excerpt );
+		$this->set_post_status( $wp_post->post_status );
+		$this->set_post_parent( $wp_post->post_parent );
+		$this->set_post_modified( $wp_post->post_modified );
+		
+	} // end set_wp_post_values
 	
 	
 	public function set_meta_data_values_by_post_id( $post_id ){
@@ -152,7 +229,7 @@ class DBWP_Post_Abstract {
 	
 	public function action_edit_form_after_title( $post ){
 		
-		if ( $post->post_type == $this->get_slug() ){
+		if ( $post->post_type == $this->get_post_type() ){
 		
 			$this->set_meta_data_values_by_post_id( $post->ID );
 		
@@ -167,7 +244,7 @@ class DBWP_Post_Abstract {
 		
 		$post_type_args = $this->return_post_type_args();
 		
-		register_post_type( $this->get_slug() , $post_type_args );
+		register_post_type( $this->get_post_type() , $post_type_args );
 		
 	} // end register_post_type
 	
