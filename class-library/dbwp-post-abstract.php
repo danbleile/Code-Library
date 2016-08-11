@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.0.3
+//@verson 0.0.4
 
 class DBWP_Post_Abstract {
 	
@@ -312,7 +312,7 @@ class DBWP_Post_Abstract {
 	
 	public function action_save_post( $post_id , $post, $update ){
 		
-		if ( $this->return_do_save( $post_id , $post, $update ) ){
+		if ( is_admin() && $this->return_do_save( $post_id , $post, $update ) ){
 			
 			$this->set_by_wp_post( $post , 'form' );
 			
@@ -483,7 +483,7 @@ class DBWP_Post_Abstract {
 	} // end return_taxonomy_slugs
 	
 	
-	/** The Methods
+	/** Utility Methods
 	* ------------------------------------------------------------------------- */
 	
 	
