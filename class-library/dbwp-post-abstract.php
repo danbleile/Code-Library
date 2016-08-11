@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.0.5
+//@verson 0.0.6
 
 class DBWP_Post_Abstract {
 	
@@ -117,7 +117,7 @@ class DBWP_Post_Abstract {
 
 
 
-			add_action( 'admin_enqueue_scripts', array( $this , 'action_admin_enqueue_scripts' ) , $this->return_priority( 'admin enqueue scripts' ) , 1 );
+			add_action( 'admin_enqueue_scripts', array( $this , 'action_admin_enqueue_scripts' ) , $this->return_priority( 'admin_enqueue_scripts' ) , 1 );
 			
 		} // end if
 		
