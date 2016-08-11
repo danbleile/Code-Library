@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.0.4
+//@verson 0.0.5
 
 class DBWP_Post_Abstract {
 	
@@ -115,6 +115,8 @@ class DBWP_Post_Abstract {
 		if ( method_exists( $this , 'the_admin_scripts' ) ){
 			
 
+
+
 			add_action( 'admin_enqueue_scripts', array( $this , 'action_admin_enqueue_scripts' ) , $this->return_priority( 'admin enqueue scripts' ) , 1 );
 			
 		} // end if
@@ -202,13 +204,15 @@ class DBWP_Post_Abstract {
 		
 		$meta_fields = $this->get_meta_fields();
 		
+		$post_meta = get_post_meta( $post_id );
+		
 		if ( ! empty( $meta_fields ) ){
 			
 			foreach( $meta_fields as $key => $default ){
 				
-				$meta_value = get_post_meta( $post_id , $key , true );
-				
-				if ( $meta_value !== '' ){
+				if ( array_key_exists( $key , $post_meta ) ){
+					
+					$meta_value = get_post_meta( $post_id , $key , true );
 					
 					$meta_fields[ $key ] = $meta_value;
 					
