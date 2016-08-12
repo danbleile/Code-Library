@@ -1,6 +1,6 @@
 <?php
 
-//@version 0.0.1
+//@version 0.0.2
 
 class DBWP_Shortcode_Abstract {
 	
@@ -79,7 +79,7 @@ class DBWP_Shortcode_Abstract {
 	
 	public function action_register_shortcode(){
 		
-		add_shortcode( $this->get_slug(), array( $this , 'return_pre_shortcode_html' ) );
+		add_shortcode( $this->get_slug(), array( $this , 'return_shortcode_html' ) );
 		
 	} // end action_register_taxonomy
 	
@@ -122,7 +122,7 @@ class DBWP_Shortcode_Abstract {
 		
 		if ( method_exists( $this , 'the_shortcode_html' ) ){
 			
-			$html .= $this->return_shortcode_html( $this->get_atts() , $this->get_content() );
+			$html .= $this->the_shortcode_html( $this->get_atts() , $this->get_content() );
 			
 		} // end if
 		
