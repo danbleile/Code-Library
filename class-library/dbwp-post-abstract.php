@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.0.6
+//@verson 0.0.7
 
 class DBWP_Post_Abstract {
 	
@@ -460,6 +460,25 @@ class DBWP_Post_Abstract {
 		}// end if
 		
 	} // end return_priority
+	
+	
+	public function return_sanitized_text_fields( $meta , $fields ){
+		
+		$clean = array();
+		
+		if ( ! empty( $fields ) ){
+			
+			foreach( $fields as $key ){
+				
+				$clean[ $key ] = sanitize_text_field( $meta[ $key ] );
+				
+			} // end foreach
+			
+		} // end if
+		
+		return $clean;
+		
+	} // end return_sanitized_text_fields
 	
 	
 	public function return_taxonomy_slugs(){
