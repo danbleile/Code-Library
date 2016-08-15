@@ -291,7 +291,7 @@ class DBWP_Post_Abstract {
 			
 		} // end if
 			
-		$this->the_admin_scripts();
+		$this->the_scripts_admin();
 		
 	} // end if
 	
@@ -362,7 +362,7 @@ class DBWP_Post_Abstract {
 			
 		} // end if
 			
-		$this->the_public_scripts();
+		$this->the_scripts_public();
 		
 	} // end if
 	
