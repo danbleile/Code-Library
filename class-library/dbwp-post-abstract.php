@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.0.7
+//@verson 0.0.8
 
 class DBWP_Post_Abstract {
 	
@@ -15,6 +15,9 @@ class DBWP_Post_Abstract {
 	protected $post_excerpt;
 	protected $post_content;
 	protected $post_date;
+	protected $post_img_full = '';
+	protected $post_img_id;
+	protected $post_img_thumb = '';
 	protected $post_modified;
 	protected $post_name;
 	protected $post_parent;
@@ -44,6 +47,9 @@ class DBWP_Post_Abstract {
 	public function get_post_excerpt() { return $this->post_excerpt; }
 	public function get_post_content( $filter = false ) { return ( $filter ) ? apply_filters( 'the_content' , $this->post_content ) : $this->post_content; }
 	public function get_post_date() { return $this->post_date; }
+	public function get_post_img_full() { return $this->post_img_full; }
+	public function get_post_img_id() { return $this->post_img_id; }
+	public function get_post_img_thumb() { return $this->post_img_thumb; }
 	public function get_post_modified() { return $this->post_modified; }
 	public function get_post_name() { return $this->post_name; }
 	public function get_post_parent(){ return $this->post_parent; }
@@ -148,6 +154,9 @@ class DBWP_Post_Abstract {
 	public function set_post_excerpt( $value ) { $this->post_excerpt = $value; }
 	public function set_post_content( $value ) { $this->post_content = $value; }
 	public function set_post_date( $value ) { $this->post_date = $value; }
+	public function set_post_img_full( $value ) { $this->post_img_full = $value; }
+	public function set_post_img_id( $value ) { $this->post_img_id = $value; }
+	public function set_post_img_thumb( $value ) { $this->post_img_thumb = $value; }
 	public function set_post_modified( $value ) { $this->post_modified = $value; }
 	public function set_post_name( $value ) { $this->post_name = $value; }
 	public function set_post_parent( $value ){ $this->post_parent = $value; }
@@ -198,6 +207,20 @@ class DBWP_Post_Abstract {
 		$this->set_post_modified( $wp_post->post_modified );
 		
 	} // end set_wp_post_values
+	
+	
+	public function set_values_by_post_id( $post_id ){
+		
+		$this->set_post_img_id( get_post_thumbnail_id( $post_id ) );
+		
+		$thumbnail_img = wp_get_attachment_image_src( $this->get_post_img_id() );
+		$this->set_post_img_thumb( $thumbnail_img[0] );
+		
+		$full_img = wp_get_attachment_image_src( $this->get_post_img_id() , 'full' );
+		$this->set_post_img_thumb( $full_img[0] );
+		
+		
+	} // end set_values_by_post_id
 	
 	
 	public function set_meta_data_values_by_post_id( $post_id ){
