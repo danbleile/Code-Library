@@ -1,6 +1,6 @@
 <?php
 
-//@verson 0.1.0
+//@verson 0.1.1
 
 class DBWP_Post_Abstract {
 	
@@ -39,7 +39,7 @@ class DBWP_Post_Abstract {
 	public function get_author_id(){ return $this->author_id; }
 	public function get_id() { return $this->id; }
 	public function get_labels() { return $this->labels; }
-	public function get_meta_data() { return $this->meta_data; }
+	public function get_meta_data( $key = false , $post_id = false ) { return ( $key ) ? $this->return_meta_value( $key , $post_id ) : $this->meta_data; }
 	public function get_meta_fields() { return $this->meta_fields; }
 	public function get_nonce_action() { return '_' . $this->get_post_type() . '_' . $this->nonce_action; }
 	public function get_nonce_name() { return $this->nonce_name; }
