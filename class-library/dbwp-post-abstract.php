@@ -15,8 +15,8 @@ class DBWP_Post_Abstract {
 	protected $post_excerpt;
 	protected $post_content;
 	protected $post_date;
-	protected $post_img_src = '';
 	protected $post_img_id;
+	protected $post_img_src = '';
 	protected $post_img_src_thumb = '';
 	protected $post_modified;
 	protected $post_name;
@@ -47,8 +47,8 @@ class DBWP_Post_Abstract {
 	public function get_post_excerpt() { return $this->post_excerpt; }
 	public function get_post_content( $filter = false ) { return ( $filter ) ? apply_filters( 'the_content' , $this->post_content ) : $this->post_content; }
 	public function get_post_date() { return $this->post_date; }
-	public function get_post_img_src() { return $this->post_img_src; }
 	public function get_post_img_id() { return $this->post_img_id; }
+	public function get_post_img_src() { return $this->post_img_src; }
 	public function get_post_img_src_thumb() { return $this->post_img_src_thumb; }
 	public function get_post_modified() { return $this->post_modified; }
 	public function get_post_name() { return $this->post_name; }
@@ -154,8 +154,8 @@ class DBWP_Post_Abstract {
 	public function set_post_excerpt( $value ) { $this->post_excerpt = $value; }
 	public function set_post_content( $value ) { $this->post_content = $value; }
 	public function set_post_date( $value ) { $this->post_date = $value; }
-	public function set_post_img_src( $value ) { $this->post_img_src = $value; }
 	public function set_post_img_id( $value ) { $this->post_img_id = $value; }
+	public function set_post_img_src( $value ) { $this->post_img_src = $value; }
 	public function set_post_img_src_thumb( $value ) { $this->post_img_src_thumb = $value; }
 	public function set_post_modified( $value ) { $this->post_modified = $value; }
 	public function set_post_name( $value ) { $this->post_name = $value; }
