@@ -184,6 +184,7 @@ class DBWP_Post_Abstract {
 			
 			case 'post_id':
 				$this->set_meta_data_values_by_post_id( $post->ID );
+				$this->set_values_by_post_id( $post->ID );
 				break;
 			case 'form':
 				$this->set_meta_data_values_by_form();

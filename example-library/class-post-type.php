@@ -90,7 +90,7 @@ class Post_Type extends DBWP_Post_Abstract {
 	// Enqueue admin scripts. Will only enqueue on edit screen if $scripts_editor_only = true (default)
 	protected function the_scripts_admin(){
 		
-		//wp_enqueue_style( 'test_style',  '/bla/style.css', false );
+		//wp_enqueue_style( '_css' , plugin_dir_url( dirname( __FILE__ ) ) . 'css/admin-style.css', array(), UPDATE:STATICVERSION:$version );
 		
 	} // end the_scripts_admin
 	
@@ -98,7 +98,7 @@ class Post_Type extends DBWP_Post_Abstract {
 	// Enqueue public scripts. Will only enqueue on single post type template if $scripts_single_only = true (default)
 	protected function the_scripts_public(){
 		
-		//wp_enqueue_style( 'test_style',  '/bla/style.css', false );
+		//wp_enqueue_style( '_css' , plugin_dir_url( dirname( __FILE__ ) ) . 'css/style.css', array(), UPDATE:STATICVERSION:$version );
 		
 	} // end the_scripts_public
 	
