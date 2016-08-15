@@ -89,7 +89,7 @@ class DBWP_Post_Abstract {
 			
 		} // end if
 		
-		if ( method_exists( $this , 'the_public_scripts' ) ){
+		if ( method_exists( $this , 'the_scripts_public' ) ){
 			
 			add_action( 'wp_enqueue_scripts', array( $this , 'action_wp_enqueue_scripts' ) , $this->return_priority( 'wp_enqueue_scripts' ) );
 			
@@ -118,11 +118,8 @@ class DBWP_Post_Abstract {
 			
 		} // end if
 		
-		if ( method_exists( $this , 'the_admin_scripts' ) ){
+		if ( method_exists( $this , 'the_scripts_admin' ) ){
 			
-
-
-
 			add_action( 'admin_enqueue_scripts', array( $this , 'action_admin_enqueue_scripts' ) , $this->return_priority( 'admin_enqueue_scripts' ) , 1 );
 			
 		} // end if
